@@ -35,3 +35,7 @@ def new_cube(center: Vector3d, size: Vector3d) -> vtkActor:
     cubeActor.SetMapper(cubeMapper)
     cubeActor.GetProperty().SetColor(vtkNamedColors().GetColor3d('Banana'))
     return cubeActor
+
+
+def new_cylinder(center: Vector3d, size: Vector3d) -> vtkActor:
+    pass

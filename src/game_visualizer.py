@@ -1,11 +1,12 @@
-from vtkmodules.vtkCommonColor import vtkNamedColors
+import logging
 
-import vtk
+from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.qt import QVTKRenderWindowInteractor
+import vtk
 
 import vtk_3d_objects
 
-from PyQt5 import QtCore
+logger = logging.getLogger()
 
 
 class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor):
@@ -22,8 +23,6 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.ResetCamera()
         self.interactor.Initialize()
 
-
-
     def init_scene(self) -> None:
         # Create cubes.
         for i in range(0, 5):
@@ -34,3 +33,4 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
 
     def update_function(self):
         self.cubes[0].RotateX(30)
+        self.renderer.GetRenderWindow().Render()

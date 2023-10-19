@@ -1,9 +1,12 @@
 import sys
+import logging
+
 from PyQt5 import QtCore, QtWidgets
 
 import controls
 import game_visualizer
 
+logger = logging.getLogger(__name__)
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -30,7 +33,5 @@ class MainWindow(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-
     window = MainWindow()
-
     sys.exit(app.exec_())
