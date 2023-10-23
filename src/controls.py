@@ -19,7 +19,7 @@ class ControlWidget(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.layout.addWidget(self.init_logging())
+        self.layout.addWidget(logs_widget.configure_logging())
 
         self.device_selector = QtWidgets.QComboBox()
         for device in list_ports.comports():
@@ -40,26 +40,6 @@ class ControlWidget(QtWidgets.QWidget):
         button = QtWidgets.QPushButton("Press Me!")
         button.clicked.connect(self.game_visualizer_widget.update_function)
         self.layout.addWidget(button)
-
-    def init_logging(self):
-        log_text_box = logs_widget.QTextEditLogger()
-
-        # log to text box
-        log_text_box.setFormatter(
-            logging.Formatter(
-                '%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s'))
-        logging.getLogger().addHandler(log_text_box)
-        logging.getLogger().setLevel(logging.DEBUG)
-
-        # log to file
-        file_handler = logging.FileHandler('ekubb.log')
-        file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(
-            logging.Formatter(
-                '%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s'))
-        logging.getLogger().addHandler(file_handler)
-
-        return log_text_box.widget
 
     def connect_device(self):
         self.serial_connection = serial.Serial(self.device_selector.currentText())

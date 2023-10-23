@@ -8,6 +8,7 @@ import game_visualizer
 
 logger = logging.getLogger(__name__)
 
+
 class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
