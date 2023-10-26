@@ -1,13 +1,5 @@
 import dataclasses
 
-from vtkmodules.vtkFiltersSources import vtkCubeSource
-from vtkmodules.vtkRenderingCore import (
-    vtkActor,
-    vtkPolyDataMapper
-)
-
-from vtkmodules.vtkCommonDataModel import vtkColor3d
-
 import vtk
 
 
@@ -18,8 +10,8 @@ class Vector3d:
     z: float
 
 
-def new_cube(center: Vector3d, size: Vector3d, color: vtkColor3d) -> vtkActor:
-    cube = vtkCubeSource()
+def new_cube(center: Vector3d, size: Vector3d, color: vtk.vtkColor3d) -> vtk.vtkActor:
+    cube = vtk.vtkCubeSource()
     cube.SetXLength(size.x)
     cube.SetYLength(size.y)
     cube.SetZLength(size.z)
@@ -28,34 +20,36 @@ def new_cube(center: Vector3d, size: Vector3d, color: vtkColor3d) -> vtkActor:
     cube.Update()
 
     # Mapper
-    cube_mapper = vtkPolyDataMapper()
+    cube_mapper = vtk.vtkPolyDataMapper()
     cube_mapper.SetInputData(cube.GetOutput())
 
     # Actor
-    cube_actor = vtkActor()
+    cube_actor = vtk.vtkActor()
     cube_actor.SetMapper(cube_mapper)
     cube_actor.GetProperty().SetColor(color)  # noqa
     return cube_actor
 
 
-def new_point(center: Vector3d, radius: float, color: vtkColor3d) -> vtkActor:
+def new_point(center: Vector3d, radius: float, color: vtk.vtkColor3d) -> vtk.vtkActor:
     point = vtk.vtkPointSource()
     point.SetRadius(radius)
     point.SetCenter(center.x, center.y, center.z)
     point.Update()
 
     # Mapper
-    point_mapper = vtkPolyDataMapper()
+    point_mapper = vtk.vtkPolyDataMapper()
     point_mapper.SetInputData(point.GetOutput())
 
     # Actor
-    point_actor = vtkActor()
+    point_actor = vtk.vtkActor()
     point_actor.SetMapper(point_mapper)
     point_actor.GetProperty().SetColor(color)  # noqa
     return point_actor
 
 
-def new_cylinder(center: Vector3d, radius: float, height: float, color: vtkColor3d) -> vtkActor:
+def new_cylinder(
+    center: Vector3d, radius: float, height: float, color: vtk.vtkColor3d
+) -> vtk.vtkActor:
     cylinder = vtk.vtkCylinderSource()
     cylinder.SetRadius(radius)
     cylinder.SetHeight(height)
@@ -64,11 +58,11 @@ def new_cylinder(center: Vector3d, radius: float, height: float, color: vtkColor
     cylinder.Update()
 
     # Mapper
-    cylinder_mapper = vtkPolyDataMapper()
+    cylinder_mapper = vtk.vtkPolyDataMapper()
     cylinder_mapper.SetInputData(cylinder.GetOutput())
 
     # Actor
-    cylinder_actor = vtkActor()
+    cylinder_actor = vtk.vtkActor()
     cylinder_actor.SetMapper(cylinder_mapper)
     cylinder_actor.GetProperty().SetColor(color)  # noqa
     return cylinder_actor

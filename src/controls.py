@@ -1,15 +1,15 @@
 import logging
-from custom_widgets import logs_widget
 
 from PyQt5 import QtWidgets
 from serial.tools import list_ports
 import serial
 
+from custom_widgets import logs_widget
+
 logger = logging.getLogger(__name__)
 
 
 class ControlWidget(QtWidgets.QWidget):
-
     def __init__(self, game_visualizer_widget, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # TODO: Make dynamic basd on screen size
