@@ -37,9 +37,9 @@ class ControlWidget(QtWidgets.QWidget):
         read_button.clicked.connect(self.read_device)
         self.layout.addWidget(read_button)
 
-        button = QtWidgets.QPushButton("Press Me!")
-        button.clicked.connect(self.game_visualizer_widget.update_function)
-        self.layout.addWidget(button)
+        # button = QtWidgets.QPushButton("Press Me!")
+        # button.clicked.connect(self.game_visualizer_widget.update_function)
+        # self.layout.addWidget(button)
 
     def connect_device(self):
         self.serial_connection = serial.Serial(self.device_selector.currentText())

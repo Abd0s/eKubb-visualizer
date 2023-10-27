@@ -60,14 +60,14 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.AddActor(self.plane)
 
         # Create cylinder
-        self.stick = vtk_3d_objects.new_cylinder(
-            vtk_3d_objects.Vector3d(20.0, 0.0, 20.0),
-            0.4,
-            2.5,
-            vtkNamedColors().GetColor3d("indigo"),
-        )
+        # self.stick = vtk_3d_objects.new_cylinder(
+        #     vtk_3d_objects.Vector3d(20.0, 0.0, 20.0),
+        #     0.4,
+        #     2.5,
+        #     vtkNamedColors().GetColor3d("indigo"),
+        # )
 
-        self.renderer.AddActor(self.stick)
+        # self.renderer.AddActor(self.stick)
 
     def reset_scene(self) -> None:
         self.renderer.RemoveAllViewProps()

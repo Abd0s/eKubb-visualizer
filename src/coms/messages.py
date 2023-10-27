@@ -10,8 +10,15 @@ class Handshake(coms_protocol.BaseMessage):
 
 class HandshakeConfirm(coms_protocol.BaseMessage):
     opcode = 2
-    test: coms_protocol.U16
-    test1: coms_protocol.U8
+
+
+class Acknowledge(coms_protocol.BaseMessage):
+    opcode = 3
+
+
+class BlockFall(coms_protocol.BaseMessage):
+    opcode = 4
+    block_index: coms_protocol.U8
 
 
 # Predicate to make sure the classes only come from the module in question
@@ -22,6 +29,4 @@ def pred(c):
 # fetch all members of module __name__ matching 'pred'
 messages = inspect.getmembers(sys.modules[__name__], pred)
 
-message_opcode_mapping = {
-    message[1].opcode: message[1] for message in messages
-}
+message_opcode_mapping = {message[1].opcode: message[1] for message in messages}
