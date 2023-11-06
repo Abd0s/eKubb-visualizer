@@ -22,9 +22,7 @@ def configure_logging() -> QtWidgets.QPlainTextEdit:
 
     # log to text box
     log_text_box.setFormatter(
-        logging.Formatter(
-            "%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s"
-        )
+        logging.Formatter("%(asctime)s %(levelname)s %(threadName)s %(message)s")
     )
     logging.getLogger().addHandler(log_text_box)
     logging.getLogger().setLevel(logging.DEBUG)
@@ -34,7 +32,7 @@ def configure_logging() -> QtWidgets.QPlainTextEdit:
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(
         logging.Formatter(
-            "%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s"
+            "%(asctime)s %(levelname)s %(threadName)s %(module)s %(funcName)s %(message)s"
         )
     )
     logging.getLogger().addHandler(file_handler)

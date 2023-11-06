@@ -4,7 +4,7 @@ import logging
 from PyQt5 import QtCore, QtWidgets
 
 import controls
-import game_visualizer
+from custom_widgets import game_visualizer
 
 logger = logging.getLogger(__name__)
 

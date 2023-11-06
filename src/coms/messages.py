@@ -1,3 +1,6 @@
+"""Specificate of messages, only `HandshakeConfirm` and `Acknowledge` should be sent from the hostcomputer
+
+"""
 import inspect
 import sys
 
@@ -5,18 +8,30 @@ from coms import coms_protocol
 
 
 class Handshake(coms_protocol.BaseMessage):
+    """Initial handshake request message, should be responded to with `HandshakeConfirm`"""
+
     opcode = 1
 
 
 class HandshakeConfirm(coms_protocol.BaseMessage):
+    """Confirms the handshake, should be sent from the hostcomputer"""
+
     opcode = 2
 
 
 class Acknowledge(coms_protocol.BaseMessage):
+    """Confirms receival of a message, should be sent from the hostcomputer"""
+
     opcode = 3
 
 
 class BlockFall(coms_protocol.BaseMessage):
+    """Indicates a block has fallen
+
+    Attrbutes:
+        block_index: The index of the fallen block
+    """
+
     opcode = 4
     block_index: coms_protocol.U8
 
@@ -27,6 +42,10 @@ def pred(c):
 
 
 # fetch all members of module __name__ matching 'pred'
-messages = inspect.getmembers(sys.modules[__name__], pred)
+messages: list[type[coms_protocol.BaseMessage]] = inspect.getmembers(
+    sys.modules[__name__], pred
+)
 
-message_opcode_mapping = {message[1].opcode: message[1] for message in messages}
+opcode_message_mapping: dict[int, type[coms_protocol.BaseMessage]] = {
+    message[1].opcode: message[1] for message in messages
+}
