@@ -18,7 +18,7 @@ class ControlWidget(QtWidgets.QWidget):
     ):
         super().__init__(*args, **kwargs)
         # TODO: Make dynamic basd on screen size
-        self.setFixedWidth(400)
+        self.setFixedWidth(600)
 
         self.game_visualizer_widget = game_visualizer_widget
         self.layout = QtWidgets.QVBoxLayout()

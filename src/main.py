@@ -13,6 +13,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
 
+        self.setWindowTitle("Ekubb companion")
+
         self.vertical_layout = QtWidgets.QVBoxLayout()
         self.frame = QtWidgets.QFrame()
         self.game_visualizer_widget = game_visualizer.GameVisualizerWidget(self.frame)

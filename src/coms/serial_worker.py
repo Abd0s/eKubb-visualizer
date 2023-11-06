@@ -55,7 +55,7 @@ class SerialWorker(QtCore.QObject):
         self.serial_connection.write(messages.HandshakeConfirm.encode())
         logger.info("Handshake complete")
 
-    def read_message(self) -> coms_protocol.BaseMessage:
+    def read_message(self) -> coms_protocol.BaseMessage | None:
         # Message reading strategy:
         # Read bytes until startbyte read, read 1 more byte (opcode) and map to message and get size, read size, read 1 more byte and check if endbyte
         # If no end byte, discard message and log error
@@ -67,7 +67,7 @@ class SerialWorker(QtCore.QObject):
         # Read and throw away bytes until start byte
         self.serial_connection.read_until(expected=coms_protocol.start_byte)
         # Read opcode
-        opcode = self.serial_connection.read(1)
+        opcode = int.from_bytes(self.serial_connection.read(1), "little")  # sandiness doesn't matter
         # Map opcode to message
         try:
             message_type = messages.opcode_message_mapping[opcode]
@@ -91,6 +91,6 @@ class SerialWorker(QtCore.QObject):
         # Acknowledge message
         self.serial_connection.write(messages.Acknowledge.encode())
 
-        logger.debug(f"Read message {message_type.__name__} and acknowledged")
+        logger.debug(f"Read message: {message_type.__name__}")
 
         return message

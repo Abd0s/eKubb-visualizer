@@ -28,7 +28,7 @@ class Acknowledge(coms_protocol.BaseMessage):
 class BlockFall(coms_protocol.BaseMessage):
     """Indicates a block has fallen
 
-    Attrbutes:
+    Attributes:
         block_index: The index of the fallen block
     """
 
@@ -42,7 +42,7 @@ def pred(c):
 
 
 # fetch all members of module __name__ matching 'pred'
-messages: list[type[coms_protocol.BaseMessage]] = inspect.getmembers(
+messages: list[tuple[str, type[coms_protocol.BaseMessage]]] = inspect.getmembers(
     sys.modules[__name__], pred
 )
 
