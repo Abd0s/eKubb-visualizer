@@ -25,6 +25,17 @@ class Acknowledge(coms_protocol.BaseMessage):
     opcode = 3
 
 
+class Log(coms_protocol.BaseMessage):
+    """Log code from microcontroller
+
+    Attributes:
+        log_code: The code from the microcontroller
+    """
+
+    opcode = 4
+    log_code: coms_protocol.U8
+
+
 class BlockFall(coms_protocol.BaseMessage):
     """Indicates a block has fallen
 
@@ -32,8 +43,15 @@ class BlockFall(coms_protocol.BaseMessage):
         block_index: The index of the fallen block
     """
 
-    opcode = 4
+    opcode = 5
     block_index: coms_protocol.U8
+
+
+class Reset(coms_protocol.BaseMessage):
+    """Indicates that the microcontroller resets
+
+    """
+    opcode = 6
 
 
 # Predicate to make sure the classes only come from the module in question

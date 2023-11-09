@@ -44,10 +44,13 @@ class ControlWidget(QtWidgets.QWidget):
         self.device_disconnect_button.setEnabled(False)
         self.device_disconnect_button.clicked.connect(self.disconnect_device)
         self.layout.addWidget(self.device_disconnect_button)
+        # Restart game
+        self.restart_game_button = QtWidgets.QPushButton("Restart")
+        self.restart_game_button.clicked.connect(self.restart_game)
+        self.layout.addWidget(self.restart_game_button)
 
-        # button = QtWidgets.QPushButton("Press Me!")
-        # button.clicked.connect(self.game_visualizer_widget.update_function)
-        # self.layout.addWidget(button)
+    def restart_game(self):
+        pass
 
     def connect_device(self):
         # Start background thread to hanlde coms with microcontroller over serial

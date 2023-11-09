@@ -33,11 +33,20 @@ class SerialWorker(QtCore.QObject):
 
         # Handle incoming messages in a loop
         while True:
-            message = self.read_message()
+            try:
+                message = self.read_message(acknowledge=False)
+            except serial.SerialException:
+                logger.error("Error reading from serial, closing port")
+                return
 
             match message:
                 case messages.BlockFall():
                     self.block_fall.emit(message.block_index)
+                case messages.Log():
+                    logger.info(f"Log code from MCU: {message.log_code}")
+                case messages.Reset():
+                    logger.error("Microcontroller reset, likely semaphore token runout")
+                    return
 
     def handshake(self) -> None:
         # Handshake protocol:
@@ -48,14 +57,14 @@ class SerialWorker(QtCore.QObject):
 
         logger.info("Waiting for handshake message")
         # Spin until handshake message is recieved
-        while not isinstance(self.read_message(), messages.Handshake):
+        while not isinstance(self.read_message(acknowledge=False), messages.Handshake):
             logger.debug("Non handshake message received")
 
         # Send confirm message for handshake
         self.serial_connection.write(messages.HandshakeConfirm.encode())
         logger.info("Handshake complete")
 
-    def read_message(self) -> coms_protocol.BaseMessage | None:
+    def read_message(self, acknowledge: bool = True) -> coms_protocol.BaseMessage | None:
         # Message reading strategy:
         # Read bytes until startbyte read, read 1 more byte (opcode) and map to message and get size, read size, read 1 more byte and check if endbyte
         # If no end byte, discard message and log error
@@ -66,6 +75,7 @@ class SerialWorker(QtCore.QObject):
 
         # Read and throw away bytes until start byte
         self.serial_connection.read_until(expected=coms_protocol.start_byte)
+        logger.debug("Read start byte")
         # Read opcode
         opcode = int.from_bytes(self.serial_connection.read(1), "little")  # sandiness doesn't matter
         # Map opcode to message
@@ -89,7 +99,8 @@ class SerialWorker(QtCore.QObject):
         message = message_type(data=message_data)
 
         # Acknowledge message
-        self.serial_connection.write(messages.Acknowledge.encode())
+        if acknowledge:
+            self.serial_connection.write(messages.Acknowledge.encode())
 
         logger.debug(f"Read message: {message_type.__name__}")
 
