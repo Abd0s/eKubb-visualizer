@@ -48,9 +48,18 @@ class ControlWidget(QtWidgets.QWidget):
         self.restart_game_button = QtWidgets.QPushButton("Restart")
         self.restart_game_button.clicked.connect(self.restart_game)
         self.layout.addWidget(self.restart_game_button)
+        # Demo game
+        self.demo_game_button = QtWidgets.QPushButton("Demo")
+        self.demo_game_button.clicked.connect(self.demo_game)
+        self.layout.addWidget(self.demo_game_button)
 
-    def restart_game(self):
-        pass
+    def demo_game(self) -> None:
+        self.game_visualizer_widget.update_function()
+
+    def restart_game(self) -> None:
+        self.game_visualizer_widget.reset_scene()
+        self.game_visualizer_widget.init_scene()
+        self.game_visualizer_widget.renderer.GetRenderWindow().Render()
 
     def connect_device(self):
         # Start background thread to hanlde coms with microcontroller over serial

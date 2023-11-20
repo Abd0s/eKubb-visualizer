@@ -31,7 +31,7 @@ def new_cube(center: Vector3d, size: Vector3d, color: vtk.vtkColor3d) -> vtk.vtk
 
 
 def new_point(center: Vector3d, radius: float, color: vtk.vtkColor3d) -> vtk.vtkActor:
-    point = vtk.vtkPointSource()
+    point = vtk.vtkSphereSource()
     point.SetRadius(radius)
     point.SetCenter(center.x, center.y, center.z)
     point.Update()
