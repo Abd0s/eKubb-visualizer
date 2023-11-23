@@ -45,9 +45,13 @@ class ControlWidget(QtWidgets.QWidget):
         self.device_disconnect_button.clicked.connect(self.disconnect_device)
         self.layout.addWidget(self.device_disconnect_button)
         # Restart game
-        self.restart_game_button = QtWidgets.QPushButton("Restart")
+        self.restart_game_button = QtWidgets.QPushButton("Restart Game")
         self.restart_game_button.clicked.connect(self.restart_game)
         self.layout.addWidget(self.restart_game_button)
+        # Reset stick
+        self.reset_stick_button = QtWidgets.QPushButton("Reset Stick")
+        self.reset_stick_button.clicked.connect(self.reset_stick)
+        self.layout.addWidget(self.reset_stick_button)
         # Demo game
         self.demo_game_button = QtWidgets.QPushButton("Demo")
         self.demo_game_button.clicked.connect(self.demo_game)
@@ -55,6 +59,9 @@ class ControlWidget(QtWidgets.QWidget):
 
     def demo_game(self) -> None:
         self.game_visualizer_widget.update_function()
+
+    def reset_stick(self) -> None:
+        self.game_visualizer_widget.reset_stick()
 
     def restart_game(self) -> None:
         self.game_visualizer_widget.reset_scene()

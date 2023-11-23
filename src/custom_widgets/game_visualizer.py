@@ -1,4 +1,5 @@
 import logging
+import random
 
 from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.qt import QVTKRenderWindowInteractor
@@ -22,14 +23,12 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.blocks_team_a: list[vtk.vtkActor] = []  # 0
         self.blocks_team_b: list[vtk.vtkActor] = []  # 1
         # Stick
-        self.stick_trail_data: list[vtk_3d_objects.Vector3d] = []
-        self.stick = None
+        self.stick_trail_data: list[tuple[vtk_3d_objects.Vector3d, vtk_3d_objects.Vector3d]] = []
+        self.stick: vtk.vtkActor | None = None
         self.stick_trail: list[vtk.vtkActor] = []
+        self.playing_team: bool = team_b
         # Playing-field
         self.plane = None
-        # Calibration point
-        self.calibration_point = None
-
         # Initialize VTK renderer
         self.renderer = vtk.vtkRenderer()
         self.renderer.SetBackground(vtkNamedColors().GetColor3d("Silver"))
@@ -41,15 +40,10 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.ResetCamera()
         self.interactor.Initialize()
 
-    def update_function(self):
-        for i in range(100):
-            self.append_stick_traject(
-                vtk_3d_objects.Vector3d(0.0, i * 0.1, (-(-(i ** 2)) * 0.1) + 10)
-            )
-
-        self.fall_block(team_a, 2)
-
     def init_scene(self) -> None:
+        # Create scores text
+
+
         # Create cubes.
         # team A
         for i in range(-(config.block_count // 2), (config.block_count // 2) + 1):
@@ -76,25 +70,67 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
 
         # Create plane (playing field)
         self.plane = vtk_3d_objects.new_cube(
-            vtk_3d_objects.Vector3d(0.0, 0.0, 0.0),
+            vtk_3d_objects.Vector3d(0.0, 0.0, -2.5),
             vtk_3d_objects.Vector3d(config.playing_field_size[0] + config.playing_field_padding,
-                                    config.playing_field_size[1] + config.playing_field_padding, 0.0),
+                                    config.playing_field_size[1] + config.playing_field_padding, 5.0),
             vtkNamedColors().GetColor3d("green"),
         )
 
+        play_field_lines_x_1 = vtk_3d_objects.new_cube(
+            vtk_3d_objects.Vector3d(0.0, config.playing_field_size[1] / 2, 0.1),
+            vtk_3d_objects.Vector3d(config.playing_field_size[0], 0.25, 0.0),
+            vtkNamedColors().GetColor3d("black"))
+
+        play_field_lines_x_2 = vtk_3d_objects.new_cube(
+            vtk_3d_objects.Vector3d(0.0, -config.playing_field_size[1] / 2, 0.1),
+            vtk_3d_objects.Vector3d(config.playing_field_size[0], 0.25, 0.0),
+            vtkNamedColors().GetColor3d("black"))
+
+        play_field_lines_y_1 = vtk_3d_objects.new_cube(
+            vtk_3d_objects.Vector3d(config.playing_field_size[0] / 2, 0.0, 0.1),
+            vtk_3d_objects.Vector3d(0.25, config.playing_field_size[1], 0.0),
+            vtkNamedColors().GetColor3d("black"))
+
+        play_field_lines_y_2 = vtk_3d_objects.new_cube(
+            vtk_3d_objects.Vector3d(-config.playing_field_size[0] / 2, 0.0, 0.1),
+            vtk_3d_objects.Vector3d(0.25, config.playing_field_size[1], 0.0),
+            vtkNamedColors().GetColor3d("black"))
+
+        play_field_lines_middle = vtk_3d_objects.new_cube(
+            vtk_3d_objects.Vector3d(0.0, 0.0, 0.1),
+            vtk_3d_objects.Vector3d(0.25, config.playing_field_size[1], 0.0),
+            vtkNamedColors().GetColor3d("black"))
+
+        self.renderer.AddActor(play_field_lines_middle)
+        self.renderer.AddActor(play_field_lines_y_1)
+        self.renderer.AddActor(play_field_lines_y_2)
+        self.renderer.AddActor(play_field_lines_x_1)
+        self.renderer.AddActor(play_field_lines_x_2)
         self.renderer.AddActor(self.plane)
 
         # Create calibration point
-        self.calibration_point = vtk_3d_objects.new_point(vtk_3d_objects.Vector3d(config.calibration_point[0], config.calibration_point[1], 0.0), 1.0,
-                                                          vtkNamedColors().GetColor3d("yellow"))
+        calibration_point_a = vtk_3d_objects.new_point(
+            vtk_3d_objects.Vector3d(config.calibration_point_a[0], config.calibration_point_a[1],
+                                    config.calibration_point_a[2]), 1.0,
+            vtkNamedColors().GetColor3d("yellow"))
 
-        self.renderer.AddActor(self.calibration_point)
+        self.renderer.AddActor(calibration_point_a)
+
+        calibration_point_b = vtk_3d_objects.new_point(
+            vtk_3d_objects.Vector3d(config.calibration_point_b[0], config.calibration_point_b[1],
+                                    config.calibration_point_b[2]), 1.0,
+            vtkNamedColors().GetColor3d("blue"))
+
+        self.renderer.AddActor(calibration_point_b)
 
         # Create cylinder
+        calibration_point = config.calibration_point_b if self.playing_team else config.calibration_point_a
         self.stick = vtk_3d_objects.new_cylinder(
-            vtk_3d_objects.Vector3d(20.0, 0.0, 20.0),
-            0.4,
-            2.5,
+            vtk_3d_objects.Vector3d(calibration_point[0], calibration_point[1],
+                                    calibration_point[2]),
+            config.stick_radius,
+            config.stick_height,
+            vtk_3d_objects.Vector3d(90.0, 0.0, 0.0),
             vtkNamedColors().GetColor3d("indigo"),
         )
 
@@ -107,6 +143,15 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         origin = vtk_3d_objects.new_point(vtk_3d_objects.Vector3d(0.0, 0.0, 0.0), 1.0,
                                           vtkNamedColors().GetColor3d("red"))
         self.renderer.AddActor(origin)
+
+    def update_function(self):
+        for x in range(200):
+            self.append_stick_traject(
+                vtk_3d_objects.Vector3d(x * -0.4, 2 - (0.1 * (x * -0.4)), 0.0476*((x * -0.4)**2) + 0.281*(x * -0.4) + 0.8), vtk_3d_objects.Vector3d(90.0, 10.0 * x, 15.0 * x)
+            )
+
+        self.fall_block(team_b, 2)
+        self.move_block(team_a, 3, vtk_3d_objects.Vector3d(10.0, 10.0, 1.0))
 
     def reset_scene(self) -> None:
         self.renderer.RemoveAllViewProps()
@@ -124,7 +169,27 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.plane = None
 
     def reset_stick(self) -> None:
-        pass
+        for trail in self.stick_trail:
+            self.renderer.RemoveActor(trail)
+
+        self.renderer.RemoveActor(self.stick)
+
+        self.stick_trail_data: list[vtk_3d_objects.Vector3d] = []
+        self.stick_trail: list[vtk.vtkActor] = []
+
+        # Create cylinder
+        calibration_point = config.calibration_point_b if self.playing_team else config.calibration_point_a
+        self.stick = vtk_3d_objects.new_cylinder(
+            vtk_3d_objects.Vector3d(calibration_point[0], calibration_point[1],
+                                    calibration_point[2]),
+            config.stick_radius,
+            config.stick_height,
+            vtk_3d_objects.Vector3d(90.0, 0.0, 0.0),
+            vtkNamedColors().GetColor3d("indigo"),
+        )
+
+        self.renderer.AddActor(self.stick)
+        self.renderer.GetRenderWindow().Render()
 
     def reset_blocks(self) -> None:
         for block_index in range(len(self.blocks_team_a)):
@@ -134,7 +199,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
             self.reset_block(team_b, block_index)
 
     def reset_block(self, team: bool, block_index: int) -> None:
-        blocks = self.blocks_team_b if team else self.blocks_team_b
+        blocks = self.blocks_team_b if team else self.blocks_team_a
         try:
             if blocks[block_index].GetOrientation()[1] == -90:
                 blocks[block_index].RotateY(90)
@@ -148,10 +213,11 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
             logger.error(f"Invalid block index {block_index}")
 
     def fall_block(self, team: bool, block_index: int) -> None:
-        blocks = self.blocks_team_b if team else self.blocks_team_b
+        blocks = self.blocks_team_b if team else self.blocks_team_a
         try:
             if blocks[block_index].GetOrientation()[1] == 0:
                 blocks[block_index].RotateY(-90)
+                blocks[block_index].RotateX(random.randrange(-15, 15))
                 self.renderer.GetRenderWindow().Render()
             else:
                 logger.warning(
@@ -160,11 +226,44 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         except IndexError:
             logger.error(f"Invalid block index {block_index}")
 
-    def append_stick_traject(self, location: vtk_3d_objects.Vector3d) -> None:
-        self.stick_trail_data.append(location)
+    def move_block(self, team: bool, block_index: int, location: vtk_3d_objects.Vector3d) -> None:
+        blocks = self.blocks_team_b if team else self.blocks_team_a
+        try:
+            self.renderer.RemoveActor(blocks[block_index])
+            moved_block = vtk_3d_objects.new_cube(
+                    location,
+                    vtk_3d_objects.Vector3d(1.0, 1.0, 2.0),
+                    vtkNamedColors().GetColor3d("Banana"),
+                )
+
+            moved_block.SetOrientation(*blocks[block_index].GetOrientation())
+            blocks[block_index] = moved_block
+            self.renderer.AddActor(moved_block)
+        except IndexError:
+            logger.error(f"Invalid block index {block_index}")
+
+        self.renderer.GetRenderWindow().Render()
+
+    def append_stick_traject(self, location: vtk_3d_objects.Vector3d, rotation: vtk_3d_objects.Vector3d) -> None:
+        calibration_point = config.calibration_point_b if self.playing_team else config.calibration_point_a
+        # Update trial
+        self.stick_trail_data.append((location, rotation))
         point = vtk_3d_objects.new_point(
-            location, 0.1, vtkNamedColors().GetColor3d("red")
+            location + vtk_3d_objects.Vector3d(calibration_point[0], calibration_point[1],
+                                               calibration_point[2]), 0.3, vtkNamedColors().GetColor3d("red")
         )
         self.stick_trail.append(point)
         self.renderer.AddActor(point)
+        # Move stick
+        self.renderer.RemoveActor(self.stick)
+        self.stick = self.stick = vtk_3d_objects.new_cylinder(
+            location + vtk_3d_objects.Vector3d(calibration_point[0], calibration_point[1],
+                                               calibration_point[2])
+            ,
+            config.stick_radius,
+            config.stick_height,
+            rotation,
+            vtkNamedColors().GetColor3d("indigo"),
+        )
+        self.renderer.AddActor(self.stick)
         self.renderer.GetRenderWindow().Render()
