@@ -1,6 +1,6 @@
 
 
-block_count: int = 5
+block_count: int = 3
 stick_height: float = 2.5
 stick_radius: float = 0.4
 

@@ -54,19 +54,20 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
                     vtk_3d_objects.Vector3d(1.0, 1.0, 2.0),
                     vtkNamedColors().GetColor3d("Banana"),
                 )
+                logger.info(f"{float(i) * (config.playing_field_size[1] / config.block_count)}")
                 self.blocks_team_a.append(cube)
                 self.renderer.AddActor(cube)
-        # team B
-        for i in range(-(config.block_count // 2), (config.block_count // 2) + 1):
-            if not (config.block_count % 2 == 0 and i == 0):
-                cube = vtk_3d_objects.new_cube(
-                    vtk_3d_objects.Vector3d(config.playing_field_size[0] / 2,
-                                            float(i) * (config.playing_field_size[1] / config.block_count), 1.0),
-                    vtk_3d_objects.Vector3d(1.0, 1.0, 2.0),
-                    vtkNamedColors().GetColor3d("Banana"),
-                )
-                self.blocks_team_b.append(cube)
-                self.renderer.AddActor(cube)
+        # # team B
+        # for i in range(-(config.block_count // 2), (config.block_count // 2) + 1):
+        #     if not (config.block_count % 2 == 0 and i == 0):
+        #         cube = vtk_3d_objects.new_cube(
+        #             vtk_3d_objects.Vector3d(config.playing_field_size[0] / 2,
+        #                                     float(i) * (config.playing_field_size[1] / config.block_count), 1.0),
+        #             vtk_3d_objects.Vector3d(1.0, 1.0, 2.0),
+        #             vtkNamedColors().GetColor3d("Banana"),
+        #         )
+        #         self.blocks_team_b.append(cube)
+        #         self.renderer.AddActor(cube)
 
         # Create plane (playing field)
         self.plane = vtk_3d_objects.new_cube(
@@ -145,22 +146,49 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.AddActor(origin)
 
     def update_function(self):
-        self.fall_block(team_b, 2)
-        self.move_block(team_a, 3, vtk_3d_objects.Vector3d(10.0, 10.0, 1.0))
+        self.fall_block(team_a, 0)
 
-        x = [i * 0.04 for i in range(100)]
-        y = [2 - (i * 0.01) for i in range(100)]
-        z = [-0.0476 * (i ** 2) + 0.281 * i + 0.8 for i in x]
+    def draw_dummy_traject(self, block_index: int):
+        if block_index == 0:
+            x = [i * 0.04 for i in range(200)]
+            y = [1-(i * 0.013) for i in range(200)]
+            z = [-0.0476 * (i ** 2) + 0.281 * i + 0.8 for i in x]
 
-        x = [i * -10 for i in x]
-        y = [i * 10 for i in y]
-        z = [i * 10 for i in z]
-        for i in range(100):
-            self.append_stick_traject(
-                vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]), vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i)
-            )
+            x = [i * -10 for i in x]
+            y = [i * 10 for i in y]
+            z = [i * 10 for i in z]
+            for i in range(200):
+                self.append_stick_traject(
+                    vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]), vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i)
+                )
+        elif block_index == 1:
+            x = [i * 0.04 for i in range(200)]
+            y = [2 - (i * 0.01) for i in range(200)]
+            z = [-0.0476 * (i ** 2) + 0.281 * i + 0.8 for i in x]
 
-        self.fall_block(team_a, 2)
+            x = [i * -10 for i in x]
+            y = [i * 10 for i in y]
+            z = [i * 10 for i in z]
+            for i in range(200):
+                self.append_stick_traject(
+                    vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]), vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i)
+                )
+
+        elif block_index == 2:
+            x = [i * 0.04 for i in range(200)]
+            y = [(i * 0.008) for i in range(200)]
+            z = [-0.0476 * (i ** 2) + 0.281 * i + 0.8 for i in x]
+
+            x = [i * -10 for i in x]
+            y = [i * 10 for i in y]
+            z = [i * 10 for i in z]
+            for i in range(200):
+                self.append_stick_traject(
+                    vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]), vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i)
+                )
+
+        else:
+            logger.error(f"Invalid block index: {block_index}")
 
     def reset_scene(self) -> None:
         self.renderer.RemoveAllViewProps()
@@ -222,6 +250,8 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
             logger.error(f"Invalid block index {block_index}")
 
     def fall_block(self, team: bool, block_index: int) -> None:
+        self.draw_dummy_traject(block_index)
+
         blocks = self.blocks_team_b if team else self.blocks_team_a
         try:
             if blocks[block_index].GetOrientation()[1] == 0:
