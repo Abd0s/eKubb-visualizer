@@ -145,13 +145,22 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.AddActor(origin)
 
     def update_function(self):
-        for x in range(200):
-            self.append_stick_traject(
-                vtk_3d_objects.Vector3d(x * -0.4, 2 - (0.1 * (x * -0.4)), 0.0476*((x * -0.4)**2) + 0.281*(x * -0.4) + 0.8), vtk_3d_objects.Vector3d(90.0, 10.0 * x, 15.0 * x)
-            )
-
         self.fall_block(team_b, 2)
         self.move_block(team_a, 3, vtk_3d_objects.Vector3d(10.0, 10.0, 1.0))
+
+        x = [i * 0.04 for i in range(100)]
+        y = [2 - (i * 0.01) for i in range(100)]
+        z = [-0.0476 * (i ** 2) + 0.281 * i + 0.8 for i in x]
+
+        x = [i * -10 for i in x]
+        y = [i * 10 for i in y]
+        z = [i * 10 for i in z]
+        for i in range(100):
+            self.append_stick_traject(
+                vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]), vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i)
+            )
+
+        self.fall_block(team_a, 2)
 
     def reset_scene(self) -> None:
         self.renderer.RemoveAllViewProps()
