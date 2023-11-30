@@ -34,7 +34,7 @@ class SerialWorker(QtCore.QObject):
         # Handle incoming messages in a loop
         while True:
             try:
-                message = self.read_message(acknowledge=False)
+                message = self.read_message(acknowledge=True)
             except serial.SerialException:
                 logger.error("Error reading from serial, closing port")
                 return

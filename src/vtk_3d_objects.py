@@ -113,3 +113,26 @@ def new_polyline(points: list[Vector3d], color: vtk.vtkColor3d) -> vtk.vtkActor:
     polydata_actor.SetMapper(polydata_mapper)
     polydata_actor.GetProperty().SetColor(color)  # noqa
     return polydata_actor
+
+
+def new_text(text: str, size: int, position: tuple[int, int],
+             frame: bool,
+             color: vtk.vtkColor3d,
+             bg_color: vtk.vtkColor3d,
+             f_color: vtk.vtkColor3d) -> vtk.vtkTextActor:
+    text_actor = vtk.vtkTextActor()
+    text_actor.SetInput(text)
+    text_property = text_actor.GetTextProperty()
+    text_property.SetFontFamilyToArial()
+    text_property.SetJustificationToCentered()
+    text_property.BoldOn()
+    text_property.SetFontSize(size)
+    text_property.SetColor(color)
+    text_property.SetFrameWidth(6)
+    text_property.SetBackgroundColor(bg_color)
+    text_property.SetFrame(frame)
+    text_property.SetFrameColor(f_color)
+    text_property.SetBackgroundOpacity(100)
+    text_actor.SetDisplayPosition(*position)
+
+    return text_actor
