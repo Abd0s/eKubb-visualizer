@@ -1,6 +1,8 @@
 import logging
 from PyQt5 import QtCore, QtWidgets
 
+import config
+
 
 class QTextEditLogger(logging.Handler, QtCore.QObject):
     append_plain_text = QtCore.pyqtSignal(str)
@@ -25,7 +27,10 @@ def configure_logging() -> QtWidgets.QPlainTextEdit:
         logging.Formatter("%(asctime)s %(levelname)s %(threadName)s %(message)s")
     )
     logging.getLogger().addHandler(log_text_box)
-    logging.getLogger().setLevel(logging.DEBUG)
+    if config.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+    else:
+        logging.getLogger().setLevel(logging.INFO)
 
     # log to file
     file_handler = logging.FileHandler("ekubb.log")
