@@ -156,9 +156,7 @@ class ControlWidget(QtWidgets.QWidget):
         self.tcp_thread.start()
 
     def disconnect_tcp(self):
-        # self.tcp_worker.stop()
         self.tcp_thread.quit()
-        # self.tcp_thread.wait()
         logger.info("TCP receiver thread exit signalled")
 
     def handle_block_fall(self, index: int):
