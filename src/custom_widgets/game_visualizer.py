@@ -4,6 +4,7 @@ import random
 from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.qt import QVTKRenderWindowInteractor
 import vtk
+from PyQt5 import QtCore
 
 import vtk_3d_objects
 
@@ -33,17 +34,16 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer = vtk.vtkRenderer()
         self.renderer.SetBackground(vtkNamedColors().GetColor3d("Silver"))
         self.GetRenderWindow().AddRenderer(self.renderer)
+        self.renderer.GetActiveCamera().SetViewAngle(45)
         self.interactor = self.GetRenderWindow().GetInteractor()
-
+        # Text
+        self.illegal_throw_indicator = None
         # Initialize scene
         self.init_scene()
         self.renderer.ResetCamera()
         self.interactor.Initialize()
 
     def init_scene(self) -> None:
-        # Create scores text
-
-
         # Create cubes.
         # team A
         for i in range(-(config.block_count // 2), (config.block_count // 2) + 1):
@@ -145,8 +145,9 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.AddActor(origin)
 
     def update_function(self):
-        self.fall_block(team_b, 2)
-        self.move_block(team_a, 3, vtk_3d_objects.Vector3d(10.0, 10.0, 1.0))
+        self.indicate_illegal_throw()
+        self.reset_stick()
+        self.fall_block(team_a, 0)
 
         x = [i * 0.04 for i in range(100)]
         y = [2 - (i * 0.01) for i in range(100)]
@@ -240,10 +241,10 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         try:
             self.renderer.RemoveActor(blocks[block_index])
             moved_block = vtk_3d_objects.new_cube(
-                    location,
-                    vtk_3d_objects.Vector3d(1.0, 1.0, 2.0),
-                    vtkNamedColors().GetColor3d("Banana"),
-                )
+                location,
+                vtk_3d_objects.Vector3d(1.0, 1.0, 2.0),
+                vtkNamedColors().GetColor3d("Banana"),
+            )
 
             moved_block.SetOrientation(*blocks[block_index].GetOrientation())
             blocks[block_index] = moved_block
@@ -275,4 +276,31 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
             vtkNamedColors().GetColor3d("indigo"),
         )
         self.renderer.AddActor(self.stick)
+        self.renderer.GetRenderWindow().Render()
+
+    def indicate_illegal_throw(self) -> None:
+        if self.illegal_throw_indicator is not None:
+            self.renderer.RemoveActor(self.illegal_throw_indicator)
+
+        indicate_position = (self.renderer.GetRenderWindow().GetActualSize()[0] // 2,
+                             self.renderer.GetRenderWindow().GetActualSize()[1] // 2 )
+        self.illegal_throw_indicator = vtk_3d_objects.new_text("--------------------\nONGELDIGE WORP!\n--------------------",
+                                                               100,
+                                                               indicate_position,
+                                                               True,
+                                                               vtkNamedColors().GetColor3d("white"),
+                                                               vtkNamedColors().GetColor3d("red"),
+                                                               vtkNamedColors().GetColor3d("white"))
+        self.renderer.AddActor(self.illegal_throw_indicator)
+        self.renderer.GetRenderWindow().Render()
+
+        QtCore.QTimer().singleShot(5000, self.decay_illegal_throw_indicate)
+
+    def decay_illegal_throw_indicate(self) -> None:
+        try:
+            self.renderer.RemoveActor(self.illegal_throw_indicator)
+        except:
+            pass
+
+        self.illegal_throw_indicator = None
         self.renderer.GetRenderWindow().Render()
