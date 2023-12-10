@@ -1,4 +1,6 @@
 import logging
+import pathlib
+
 from PyQt5 import QtCore, QtWidgets
 
 import config
@@ -33,7 +35,9 @@ def configure_logging() -> QtWidgets.QPlainTextEdit:
         logging.getLogger().setLevel(logging.INFO)
 
     # log to file
-    file_handler = logging.FileHandler("ekubb.log")
+    file_handler = logging.FileHandler(
+        pathlib.Path(__file__).parent.parent / "ekubb_logs.log"
+    )
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(
         logging.Formatter(
