@@ -1,4 +1,4 @@
-"""Specificate of messages, only `HandshakeConfirm` and `Acknowledge` should be sent from the hostcomputer
+"""Specification of messages, only `HandshakeConfirm` and `Acknowledge` should be sent from the hostcomputer
 
 """
 import inspect
