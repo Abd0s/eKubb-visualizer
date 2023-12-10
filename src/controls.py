@@ -17,7 +17,6 @@ class ControlWidget(QtWidgets.QWidget):
         **kwargs
     ):
         super().__init__(*args, **kwargs)
-        # TODO: Make dynamic basd on screen size
         self.setFixedWidth(600)
 
         # Main layout
@@ -26,7 +25,11 @@ class ControlWidget(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         # Logs widget
-        self.layout.addWidget(logs_widget.configure_logging())
+        logs_groupbox = QtWidgets.QGroupBox("Logs")
+        self.layout.addWidget(logs_groupbox)
+        logs_layout = QtWidgets.QVBoxLayout()
+        logs_groupbox.setLayout(logs_layout)
+        logs_layout.addWidget(logs_widget.configure_logging())
 
         # Serial connection group
         serial_connection_groupbox = QtWidgets.QGroupBox("Serial Connection")
@@ -43,11 +46,11 @@ class ControlWidget(QtWidgets.QWidget):
         devices_refresh_button.clicked.connect(self.refresh_devices_list)
         serial_connection_layout.addWidget(devices_refresh_button)
         # Device connect button
-        self.device_connect_button = QtWidgets.QPushButton("Connect")
+        self.device_connect_button = QtWidgets.QPushButton("Connect Serial")
         self.device_connect_button.clicked.connect(self.connect_device)
         serial_connection_layout.addWidget(self.device_connect_button)
         # Device disconnect button
-        self.device_disconnect_button = QtWidgets.QPushButton("Disconnect")
+        self.device_disconnect_button = QtWidgets.QPushButton("Disconnect Serial")
         self.device_disconnect_button.setEnabled(False)
         self.device_disconnect_button.clicked.connect(self.disconnect_device)
         serial_connection_layout.addWidget(self.device_disconnect_button)
