@@ -1,7 +1,10 @@
 import sys
 import logging
+import pathlib
+import ctypes
+import os
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 import controls
 from custom_widgets import game_visualizer
@@ -14,6 +17,14 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self, parent)
 
         self.setWindowTitle("Ekubb companion")
+        self.setWindowIcon(
+            QtGui.QIcon((str(pathlib.Path(__file__).parent.parent / "icon.png")))
+        )
+
+        if os.name == "nt":
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                "company.app.1"
+            )  # Workaround for Windows not showing icon taskbar
 
         self.vertical_layout = QtWidgets.QVBoxLayout()
         self.frame = QtWidgets.QFrame()
