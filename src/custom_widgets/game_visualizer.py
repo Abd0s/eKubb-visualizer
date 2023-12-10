@@ -389,7 +389,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
     def decay_illegal_throw_indicate(self) -> None:
         try:
             self.renderer.RemoveActor(self.illegal_throw_indicator)
-        except:  # noqa (disable IDE warning for to broad excep statement)
+        except:  # noqa (disable IDE warning for to broad excep statement), specific execption should be added
             pass
 
         self.illegal_throw_indicator = None
