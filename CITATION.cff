@@ -1,0 +1,20 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Ekubb companion
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Abdulahad
+    email: ahad.kancan@gmail.com
+    family-names: Kancan
+    affiliation: KULeuven
+identifiers:
+  - type: url
+    value: 'https://github.com/Abd0s/eKubb-visualizer'
+    description: The GitHub release URL of tag 1.0
+repository-code: 'https://github.com/Abd0s/eKubb-visualizer'
+abstract: Visualization software for eKubb

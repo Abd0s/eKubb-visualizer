@@ -17,54 +17,76 @@ class ControlWidget(QtWidgets.QWidget):
         **kwargs
     ):
         super().__init__(*args, **kwargs)
-        # TODO: Make dynamic basd on screen size
         self.setFixedWidth(600)
 
+        # Main layout
         self.game_visualizer_widget = game_visualizer_widget
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.layout.addWidget(logs_widget.configure_logging())
+        # Logs widget
+        logs_groupbox = QtWidgets.QGroupBox("Logs")
+        self.layout.addWidget(logs_groupbox)
+        logs_layout = QtWidgets.QVBoxLayout()
+        logs_groupbox.setLayout(logs_layout)
+        logs_layout.addWidget(logs_widget.configure_logging())
 
+        # Serial connection group
+        serial_connection_groupbox = QtWidgets.QGroupBox("Serial Connection")
+        self.layout.addWidget(serial_connection_groupbox)
+        serial_connection_layout = QtWidgets.QVBoxLayout()
+        serial_connection_groupbox.setLayout(serial_connection_layout)
         # Device selector
         self.device_selector = QtWidgets.QComboBox()
         for device in list_ports.comports():
             self.device_selector.addItem(device.device)
-        self.layout.addWidget(self.device_selector)
+        serial_connection_layout.addWidget(self.device_selector)
         # Device refresh button
         devices_refresh_button = QtWidgets.QPushButton("Refresh")
         devices_refresh_button.clicked.connect(self.refresh_devices_list)
-        self.layout.addWidget(devices_refresh_button)
+        serial_connection_layout.addWidget(devices_refresh_button)
         # Device connect button
-        self.device_connect_button = QtWidgets.QPushButton("Connect")
+        self.device_connect_button = QtWidgets.QPushButton("Connect Serial")
         self.device_connect_button.clicked.connect(self.connect_device)
-        self.layout.addWidget(self.device_connect_button)
+        serial_connection_layout.addWidget(self.device_connect_button)
         # Device disconnect button
-        self.device_disconnect_button = QtWidgets.QPushButton("Disconnect")
+        self.device_disconnect_button = QtWidgets.QPushButton("Disconnect Serial")
         self.device_disconnect_button.setEnabled(False)
         self.device_disconnect_button.clicked.connect(self.disconnect_device)
-        self.layout.addWidget(self.device_disconnect_button)
+        serial_connection_layout.addWidget(self.device_disconnect_button)
+
+        # TCP connection group
+        tcp_connection_groupbox = QtWidgets.QGroupBox("TCP Connection")
+        self.layout.addWidget(tcp_connection_groupbox)
+        tcp_connection_layout = QtWidgets.QVBoxLayout()
+        tcp_connection_groupbox.setLayout(tcp_connection_layout)
         # TCP connect button
         self.tcp_connect_button = QtWidgets.QPushButton("Connect TCP")
         self.tcp_connect_button.clicked.connect(self.connect_tcp)
-        self.layout.addWidget(self.tcp_connect_button)
+        tcp_connection_layout.addWidget(self.tcp_connect_button)
         # TCP disconnect button
         self.tcp_disconnect_button = QtWidgets.QPushButton("Disconnect TCP")
         self.tcp_disconnect_button.setEnabled(False)
         self.tcp_disconnect_button.clicked.connect(self.disconnect_tcp)
-        self.layout.addWidget(self.tcp_disconnect_button)
+        tcp_connection_layout.addWidget(self.tcp_disconnect_button)
+
+        # Game controls group
+        game_controls_groupbox = QtWidgets.QGroupBox("Game controls")
+        self.layout.addWidget(game_controls_groupbox)
+        game_control_layout = QtWidgets.QVBoxLayout()
+        game_controls_groupbox.setLayout(game_control_layout)
         # Restart game
         self.restart_game_button = QtWidgets.QPushButton("Restart Game")
         self.restart_game_button.clicked.connect(self.restart_game)
-        self.layout.addWidget(self.restart_game_button)
+        game_control_layout.addWidget(self.restart_game_button)
         # Reset stick
         self.reset_stick_button = QtWidgets.QPushButton("Reset Stick")
         self.reset_stick_button.clicked.connect(self.reset_stick)
-        self.layout.addWidget(self.reset_stick_button)
+        game_control_layout.addWidget(self.reset_stick_button)
         # Demo game
         self.demo_game_button = QtWidgets.QPushButton("Demo")
         self.demo_game_button.clicked.connect(self.demo_game)
-        self.layout.addWidget(self.demo_game_button)
+        game_control_layout.addWidget(self.demo_game_button)
 
     def demo_game(self) -> None:
         self.game_visualizer_widget.update_function()
@@ -82,7 +104,9 @@ class ControlWidget(QtWidgets.QWidget):
         self.device_disconnect_button.setEnabled(True)
 
         self.serial_thread = QtCore.QThread()
-        self.serial_worker = serial_worker.SerialWorker(self.device_selector.currentText())
+        self.serial_worker = serial_worker.SerialWorker(
+            self.device_selector.currentText()
+        )
         self.serial_worker.moveToThread(self.serial_thread)
         # Connect signals and slots
         self.serial_thread.started.connect(self.serial_worker.run)
@@ -132,9 +156,7 @@ class ControlWidget(QtWidgets.QWidget):
         self.tcp_thread.start()
 
     def disconnect_tcp(self):
-        #self.tcp_worker.stop()
         self.tcp_thread.quit()
-        #self.tcp_thread.wait()
         logger.info("TCP receiver thread exit signalled")
 
     def handle_block_fall(self, index: int):

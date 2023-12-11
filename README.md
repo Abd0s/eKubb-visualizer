@@ -4,7 +4,7 @@ Ekubb desktop software used for visualization and data processing.
 
 ## Prerequisites
 
-This program with Python 3.10 or higher on Windows.
+This program has been tested with Python 3.10 or higher on Windows.
 
 ## Getting started
 
@@ -26,7 +26,7 @@ and activate it
 .\venv\scripts\activate.bat
 ```
 
-Install the required dependencies using pip and pipwin
+Install the required dependencies using pip
 
 ```bash
 pip install -r requirements.txt
