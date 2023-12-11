@@ -48,7 +48,7 @@ class BlockFall(coms_protocol.BaseMessage):
 
 
 class Reset(coms_protocol.BaseMessage):
-    """Indicates that the microcontroller resets
+    """Indicates that the receiver resets
 
     """
     opcode = 6
