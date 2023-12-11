@@ -4,7 +4,7 @@ Ekubb desktop software used for visualization and data processing.
 
 ## Prerequisites
 
-This program is tested Python 3.10 or higher on Windows.
+This program has been tested with Python 3.10 or higher on Windows.
 
 ## Getting started
 
