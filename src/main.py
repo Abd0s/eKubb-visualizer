@@ -6,8 +6,7 @@ import os
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
-import controls
-from custom_widgets import game_visualizer
+from custom_widgets import game_visualizer, ekubb_controls
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.vertical_layout = QtWidgets.QVBoxLayout()
         self.frame = QtWidgets.QFrame()
         self.game_visualizer_widget = game_visualizer.GameVisualizerWidget(self.frame)
-        self.controls_widget = controls.ControlWidget(self.game_visualizer_widget)
+        self.controls_widget = ekubb_controls.EkkubControlWidget(
+            self.game_visualizer_widget
+        )
         self.vertical_layout.addWidget(self.game_visualizer_widget)
 
         self.controls_widget_dock = QtWidgets.QDockWidget("Controls", self)

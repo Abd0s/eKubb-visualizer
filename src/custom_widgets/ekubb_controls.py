@@ -9,7 +9,7 @@ from custom_widgets import logs_widget, game_visualizer
 logger = logging.getLogger(__name__)
 
 
-class ControlWidget(QtWidgets.QWidget):
+class EkkubControlWidget(QtWidgets.QWidget):
     def __init__(
         self,
         game_visualizer_widget: game_visualizer.GameVisualizerWidget,
