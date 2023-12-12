@@ -88,6 +88,8 @@ class ControlWidget(QtWidgets.QWidget):
         self.demo_game_button.clicked.connect(self.demo_game)
         game_control_layout.addWidget(self.demo_game_button)
 
+        logger.info("Ready to go...")
+
     def demo_game(self) -> None:
         self.game_visualizer_widget.update_function()
 
