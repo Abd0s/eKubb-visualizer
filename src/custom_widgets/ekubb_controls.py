@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 class EkkubControlWidget(QtWidgets.QWidget):
     def __init__(
-        self,
-        game_visualizer_widget: game_visualizer.GameVisualizerWidget,
-        *args,
-        **kwargs
+            self,
+            game_visualizer_widget: game_visualizer.GameVisualizerWidget,
+            *args,
+            **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.setFixedWidth(600)
@@ -80,6 +80,17 @@ class EkkubControlWidget(QtWidgets.QWidget):
         self.layout.addWidget(game_controls_groupbox)
         game_control_layout = QtWidgets.QVBoxLayout()
         game_controls_groupbox.setLayout(game_control_layout)
+        # Team toggle
+        toggle_button_layout = QtWidgets.QHBoxLayout()
+        self.toggle_playing_team_a_button = QtWidgets.QPushButton("Team A")
+        self.toggle_playing_team_b_button = QtWidgets.QPushButton("Team B")
+        self.toggle_playing_team_b_button.setDisabled(True)
+        self.toggle_playing_team_b_button.clicked.connect(self.toggle_playing_team)
+        self.toggle_playing_team_a_button.clicked.connect(self.toggle_playing_team)
+        toggle_button_layout.addWidget(QtWidgets.QLabel("Toggle playing team:"))
+        toggle_button_layout.addWidget(self.toggle_playing_team_a_button)
+        toggle_button_layout.addWidget(self.toggle_playing_team_b_button)
+        game_control_layout.addLayout(toggle_button_layout)
         # Restart game
         self.restart_game_button = QtWidgets.QPushButton("Restart Game")
         self.restart_game_button.clicked.connect(self.restart_game)
@@ -179,10 +190,26 @@ class EkkubControlWidget(QtWidgets.QWidget):
         Args:
             index: The index of the block to fall over.
         """
-        self.game_visualizer_widget.fall_block(False, index)
+        self.game_visualizer_widget.fall_block(self.game_visualizer_widget.playing_team, index)
 
     def refresh_devices_list(self) -> None:
         """Refresh button slot, refreshes the COM devices list."""
         self.device_selector.clear()
         for i in list_ports.comports():
             self.device_selector.addItem(i.device)
+
+    def toggle_playing_team(self) -> None:
+        """Toggle the playing team"""
+        if self.toggle_playing_team_b_button.isEnabled():
+            # Means team B button is pressed
+            self.toggle_playing_team_b_button.setDisabled(True)
+            self.toggle_playing_team_a_button.setDisabled(False)
+
+        elif self.toggle_playing_team_a_button.isEnabled():
+            # Means team A button is pressed
+            self.toggle_playing_team_b_button.setDisabled(False)
+            self.toggle_playing_team_a_button.setDisabled(True)
+
+        self.game_visualizer_widget.playing_team = not self.game_visualizer_widget.playing_team
+        logger.info(f"Toggled playing team from {not self.game_visualizer_widget.playing_team} to "
+                    f"{self.game_visualizer_widget.playing_team}")
