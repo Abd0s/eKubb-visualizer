@@ -87,7 +87,7 @@ class EkkubControlWidget(QtWidgets.QWidget):
         toggle_button_layout = QtWidgets.QHBoxLayout()
         self.toggle_playing_team_a_button = QtWidgets.QPushButton("Team A")
         self.toggle_playing_team_b_button = QtWidgets.QPushButton("Team B")
-        self.toggle_playing_team_b_button.setDisabled(True)
+        self.toggle_playing_team_a_button.setDisabled(True)
         self.toggle_playing_team_b_button.clicked.connect(self.toggle_playing_team)
         self.toggle_playing_team_a_button.clicked.connect(self.toggle_playing_team)
         toggle_button_layout.addWidget(QtWidgets.QLabel("Toggle playing team:"))
@@ -187,6 +187,7 @@ class EkkubControlWidget(QtWidgets.QWidget):
         self.tcp_thread.quit()
         logger.info("TCP receiver thread exit signalled")
 
+<<<<<<< HEAD
     def handle_block_fall(self, index: int) -> None:
         """Fall block slot, used from datasource worker threads.
 
@@ -194,6 +195,10 @@ class EkkubControlWidget(QtWidgets.QWidget):
             index: The index of the block to fall over.
         """
         self.game_visualizer_widget.fall_block(self.game_visualizer_widget.playing_team, index)
+=======
+    def handle_block_fall(self, index: int):
+        self.game_visualizer_widget.fall_block(not self.game_visualizer_widget.playing_team, index)
+>>>>>>> 8de70bb (fix incorrect side for block fall)
 
     def refresh_devices_list(self) -> None:
         """Refresh button slot, refreshes the COM devices list."""
