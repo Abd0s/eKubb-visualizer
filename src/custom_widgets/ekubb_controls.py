@@ -37,10 +37,13 @@ class EkkubControlWidget(QtWidgets.QWidget):
         serial_connection_layout = QtWidgets.QVBoxLayout()
         serial_connection_groupbox.setLayout(serial_connection_layout)
         # Device selector
+        device_selector_layout = QtWidgets.QHBoxLayout()
         self.device_selector = QtWidgets.QComboBox()
         for device in list_ports.comports():
             self.device_selector.addItem(device.device)
-        serial_connection_layout.addWidget(self.device_selector)
+        device_selector_layout.addWidget(QtWidgets.QLabel("Select COM device:"))
+        device_selector_layout.addWidget(self.device_selector)
+        serial_connection_layout.addLayout(device_selector_layout)
         # Device refresh button
         devices_refresh_button = QtWidgets.QPushButton("Refresh")
         devices_refresh_button.clicked.connect(self.refresh_devices_list)
