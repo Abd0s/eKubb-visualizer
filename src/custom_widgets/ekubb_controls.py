@@ -1,3 +1,8 @@
+"""PyQt widget that creates all the GUI elements and is used to orchastrite the program state.
+
+This widget is responsible for creating all the GUI elements, creating and communicating with 
+the datasource workers such as the serial worker and and updating the game visualisation. 
+"""
 import logging
 
 from PyQt5 import QtWidgets, QtCore
@@ -91,17 +96,21 @@ class EkkubControlWidget(QtWidgets.QWidget):
         logger.info("Ready to go...")
 
     def demo_game(self) -> None:
+        """Demo button slot, shows a demo."""
         self.game_visualizer_widget.update_function()
 
     def reset_stick(self) -> None:
+        """Reset stick button slot, resets the stick."""
         self.game_visualizer_widget.reset_stick()
 
     def restart_game(self) -> None:
+        """Restart game button slot, restarts the game."""
         self.game_visualizer_widget.reset_scene()
         self.game_visualizer_widget.init_scene()
         self.game_visualizer_widget.renderer.GetRenderWindow().Render()
 
-    def connect_device(self):
+    def connect_device(self) -> None:
+        """Connect serial button slot, starts the serial worker to the selected COM device."""
         # Start background thread to hanlde coms with microcontroller over serial
         self.device_disconnect_button.setEnabled(True)
 
@@ -128,11 +137,13 @@ class EkkubControlWidget(QtWidgets.QWidget):
 
         self.serial_thread.start()
 
-    def disconnect_device(self):
+    def disconnect_device(self) -> None:
+        """Disconnect serial button slot, sends the exit signal to the serial worker thread."""
         self.serial_thread.exit()
         logger.info("Serial thread exit signalled")
 
-    def connect_tcp(self):
+    def connect_tcp(self) -> None:
+        """Connect TCP button slot, starts the TCP receiver worker."""
         # Start background thread to hanlde coms with microcontroller over serial
         self.tcp_disconnect_button.setEnabled(True)
 
@@ -157,14 +168,21 @@ class EkkubControlWidget(QtWidgets.QWidget):
 
         self.tcp_thread.start()
 
-    def disconnect_tcp(self):
+    def disconnect_tcp(self) -> None:
+        """Disconnect TCP button slot, sends the exit signal to the TCP receiver thread."""
         self.tcp_thread.quit()
         logger.info("TCP receiver thread exit signalled")
 
-    def handle_block_fall(self, index: int):
+    def handle_block_fall(self, index: int) -> None:
+        """Fall block slot, used from datasource worker threads.
+
+        Args:
+            index: The index of the block to fall over.
+        """
         self.game_visualizer_widget.fall_block(False, index)
 
-    def refresh_devices_list(self):
+    def refresh_devices_list(self) -> None:
+        """Refresh button slot, refreshes the COM devices list."""
         self.device_selector.clear()
         for i in list_ports.comports():
             self.device_selector.addItem(i.device)

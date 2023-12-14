@@ -1,3 +1,6 @@
+"""PyQt widget visualizing the eKubb game using VTK
+
+"""
 import logging
 import random
 
@@ -46,6 +49,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.interactor.Initialize()
 
     def init_scene(self) -> None:
+        """Initialises the scene to the starting state by creating the blocks, playig field and other 3D objects."""
         # Create cubes.
         # team A
         for i in range(-(config.block_count // 2), (config.block_count // 2) + 1):
@@ -65,8 +69,11 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         for i in range(-(config.block_count // 2), (config.block_count // 2) + 1):
             if not (config.block_count % 2 == 0 and i == 0):
                 cube = vtk_3d_objects.new_cube(
-                    vtk_3d_objects.Vector3d(config.playing_field_size[0] / 2,
-                                            float(i) * (config.playing_field_size[1] / config.block_count), 1.0),
+                    vtk_3d_objects.Vector3d(
+                        config.playing_field_size[0] / 2,
+                        float(i) * (config.playing_field_size[1] / config.block_count),
+                        1.0,
+                    ),
                     vtk_3d_objects.Vector3d(1.0, 1.0, 2.0),
                     vtkNamedColors().GetColor3d("Banana"),
                 )
@@ -168,6 +175,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
             self.debug_init()
 
     def debug_init(self) -> None:
+        """Creates debuging objects."""
         # Origin
         origin = vtk_3d_objects.new_point(
             vtk_3d_objects.Vector3d(0.0, 0.0, 0.0),
@@ -177,6 +185,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.AddActor(origin)
 
     def update_function(self):
+        """Called when the demo button is pressed."""
         self.indicate_illegal_throw()
         self.reset_stick()
         self.fall_block(team_a, 0)
@@ -185,45 +194,49 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         if block_index == 0:
             x = [i * 0.04 for i in range(200)]
             y = [1 - (i * 0.013) for i in range(200)]
-            z = [-0.0476 * (i ** 2) + 0.281 * i + 0.8 for i in x]
+            z = [-0.0476 * (i**2) + 0.281 * i + 0.8 for i in x]
 
             x = [i * -10 for i in x]
             y = [i * 10 for i in y]
             z = [i * 10 for i in z]
             for i in range(200):
                 self.append_stick_traject(
-                    vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]), vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i)
+                    vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]),
+                    vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i),
                 )
         elif block_index == 1:
             x = [i * 0.04 for i in range(200)]
             y = [2 - (i * 0.01) for i in range(200)]
-            z = [-0.0476 * (i ** 2) + 0.281 * i + 0.8 for i in x]
+            z = [-0.0476 * (i**2) + 0.281 * i + 0.8 for i in x]
 
             x = [i * -10 for i in x]
             y = [i * 10 for i in y]
             z = [i * 10 for i in z]
             for i in range(200):
                 self.append_stick_traject(
-                    vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]), vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i)
+                    vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]),
+                    vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i),
                 )
 
         elif block_index == 2:
             x = [i * 0.04 for i in range(200)]
             y = [(i * 0.008) for i in range(200)]
-            z = [-0.0476 * (i ** 2) + 0.281 * i + 0.8 for i in x]
+            z = [-0.0476 * (i**2) + 0.281 * i + 0.8 for i in x]
 
             x = [i * -10 for i in x]
             y = [i * 10 for i in y]
             z = [i * 10 for i in z]
             for i in range(200):
                 self.append_stick_traject(
-                    vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]), vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i)
+                    vtk_3d_objects.Vector3d(x[i] - 20, y[i], z[i]),
+                    vtk_3d_objects.Vector3d(90.0, 10.0 * i, 15.0 * i),
                 )
 
         else:
             logger.error(f"Invalid block index: {block_index}")
 
     def reset_scene(self) -> None:
+        """Empty the scene and reset the instance state."""
         self.renderer.RemoveAllViewProps()
         self.renderer.GetRenderWindow().Render()
 
@@ -239,6 +252,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.plane = None
 
     def reset_stick(self) -> None:
+        """Resets the stick and throwstick trajectory to the calibration point."""
         for trail in self.stick_trail:
             self.renderer.RemoveActor(trail)
 
@@ -267,6 +281,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.GetRenderWindow().Render()
 
     def reset_blocks(self) -> None:
+        """Resets all blocks in the game."""
         for block_index in range(len(self.blocks_team_a)):
             self.reset_block(team_a, block_index)
 
@@ -274,6 +289,12 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
             self.reset_block(team_b, block_index)
 
     def reset_block(self, team: bool, block_index: int) -> None:
+        """Resets the given block to stand up again.
+
+        Args:
+            team: The team of whoes block to reset.
+            block_index: The index of the block to reset.
+        """
         blocks = self.blocks_team_b if team else self.blocks_team_a
         try:
             if blocks[block_index].GetOrientation()[1] == -90:
@@ -288,6 +309,12 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
             logger.error(f"Invalid block index {block_index}")
 
     def fall_block(self, team: bool, block_index: int) -> None:
+        """Updates the given block to have fallen over.
+
+        Args:
+            team: The team of whoes block to fall over.
+            block_index: The index of the block to fall over.
+        """
         blocks = self.blocks_team_b if team else self.blocks_team_a
         try:
             if blocks[block_index].GetOrientation()[1] == 0:
@@ -304,6 +331,13 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
     def move_block(
         self, team: bool, block_index: int, location: vtk_3d_objects.Vector3d
     ) -> None:
+        """Move the given block to the new given location.
+
+        Args:
+            team: The team of whoes block to move.
+            block_index: The index of the block to move.
+            location: The new location of the block.
+        """
         blocks = self.blocks_team_b if team else self.blocks_team_a
         try:
             self.renderer.RemoveActor(blocks[block_index])
@@ -324,6 +358,12 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
     def append_stick_traject(
         self, location: vtk_3d_objects.Vector3d, rotation: vtk_3d_objects.Vector3d
     ) -> None:
+        """Append a new location of the throwstick and update the shown trajectory and throwstick.
+
+        Args:
+            location: The coordiantes of the new position to append
+            rotation: The rotation change of the throwstick to append
+        """
         calibration_point = (
             config.calibration_point_b
             if self.playing_team
@@ -357,6 +397,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.GetRenderWindow().Render()
 
     def indicate_illegal_throw(self) -> None:
+        """Shows an indicator informing about an illegal throw."""
         if self.illegal_throw_indicator is not None:
             self.renderer.RemoveActor(self.illegal_throw_indicator)
 
@@ -379,6 +420,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         QtCore.QTimer().singleShot(5000, self.decay_illegal_throw_indicate)
 
     def decay_illegal_throw_indicate(self) -> None:
+        """Removes the illigal throw indicator if one exists."""
         try:
             self.renderer.RemoveActor(self.illegal_throw_indicator)
         except:  # noqa (disable IDE warning for to broad excep statement), specific execption should be added

@@ -1,4 +1,16 @@
-"""Microcontroller-hostcomputer communication protocol base implemantation.
+"""Datasource-hostcomputer communication protocol base implemantation.
+
+Allows for a declerative implementation of the protocol messages.
+
+Typical usage example:
+
+class Handshake(BaseMessage):
+    opcode = 1
+    example_data: U16
+    
+decoded_message = Handshake(b"\x01\x02"))
+
+print(decoded_message.example_data)
 
 """
 import inspect
@@ -9,6 +21,8 @@ end_byte: bytes = b"\x2D"
 
 
 class BaseMessage:
+    """Base class for message definitions. Implements the decoding and encoding using type annotations."""
+
     opcode: int = 0
 
     def __init__(self, data: bytes, endian: typing.Literal["little", "big"] = "little"):
@@ -75,6 +89,8 @@ class BaseMessage:
 
 
 class I8:
+    """Signed 8 bit integer"""
+
     size = 1
 
     @classmethod
@@ -89,6 +105,8 @@ class I8:
 
 
 class I16:
+    """Signed 16 bit integer"""
+
     size = 2
 
     @classmethod
@@ -103,6 +121,8 @@ class I16:
 
 
 class U8:
+    """Unsigned 8 bit integer"""
+
     size = 1
 
     @classmethod
@@ -117,6 +137,8 @@ class U8:
 
 
 class U16:
+    """Unsigned 8 bit integer"""
+
     size = 2
 
     @classmethod
@@ -131,6 +153,8 @@ class U16:
 
 
 class CHAR:
+    """8 bit ASCII character"""
+
     size = 1
 
     @classmethod

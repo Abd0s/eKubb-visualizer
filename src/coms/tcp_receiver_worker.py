@@ -1,3 +1,6 @@
+"""Worker thread that handles communication with data sources through a TCP connection.
+
+"""
 import logging
 import socket
 
@@ -10,6 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 class TCPReceiverWorker(QtCore.QObject):
+    """The Qt thread for communication over a TCP connection
+
+    Attributes:
+        tcp_socket: The TCP socket.
+        connection: The TCP connection socket.
+    """
+
     block_fall = QtCore.pyqtSignal(int)
 
     def __init__(self) -> None:
@@ -19,8 +29,11 @@ class TCPReceiverWorker(QtCore.QObject):
         self.connection = None
 
     def run(self) -> None:
+        """Ran when the thread is started"""
         # Connect TCP
-        logger.info(f"Trying to establish TCP connection: {config.TCP_IP, config.TCP_PORT}")
+        logger.info(
+            f"Trying to establish TCP connection: {config.TCP_IP, config.TCP_PORT}"
+        )
         self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.tcp_socket.bind((config.TCP_IP, config.TCP_PORT))
         self.tcp_socket.listen(1)
@@ -70,12 +83,12 @@ class TCPReceiverWorker(QtCore.QObject):
         logger.info("TCP Receiver thread exiting")
 
     def handshake(self) -> None:
-        # Handshake protocol:
-        # Spin until Handshake message from microcontroller
-        # On handshake message recieved, send back HandshakeConfirm message
-        # If any other message received, discard.
-        # Tolerate 10 other messages before disconnecting, or 60 seconds.
+        """Performs the handshake transaction.
 
+        The following strategy is used:
+            1. Spin until Handshake message from microcontroller.
+            2. On handshake message recieved, send back HandshakeConfirm message.
+        """
         logger.info("Waiting for handshake message")
         # Spin until handshake message is received
         while not isinstance(self.read_message(acknowledge=False), messages.Handshake):
@@ -85,12 +98,23 @@ class TCPReceiverWorker(QtCore.QObject):
         self.connection.sendall(messages.HandshakeConfirm.encode())
         logger.info("Handshake complete")
 
-    def read_message(self, acknowledge: bool = True) -> coms_protocol.BaseMessage | None:
-        # Message reading strategy:
-        # Read bytes until startbyte read, read 1 more byte (opcode) and map to message and get size, read size, read 1 more byte and check if endbyte
-        # If no end byte, discard message and log error
-        # If no opcode mapping discard, log error
-        # If valid read, send ACK message
+    def read_message(
+        self, acknowledge: bool = True
+    ) -> coms_protocol.BaseMessage | None:
+        """Tries to read and decode a message from the TCP connection.
+
+        The following strategy is used:
+            1. Read bytes until startbyte read, read 1 more byte (opcode) and map to message and get size, read size,
+               read 1 more byte and check if endbyte.
+            2. If no end byte, discard message and log error.
+            3. If no opcode mapping discard, log error.
+
+        Args:
+            acknowledge: True if an acknowledge message should be sent back after a message has been received. Defaults to True.
+
+        Returns:
+            If succesfully received and decoden an message, an corresponding message instance. Else returns `None`.
+        """
 
         logger.debug("Reading message...")
 
@@ -102,7 +126,9 @@ class TCPReceiverWorker(QtCore.QObject):
 
         logger.debug("Read start byte")
         # Read opcode
-        opcode = int.from_bytes(self.connection.recv(1), "little")  # sandiness doesn't matter
+        opcode = int.from_bytes(
+            self.connection.recv(1), "little"
+        )  # endinness doesn't matter
         # Map opcode to message
         try:
             message_type = messages.opcode_message_mapping[opcode]

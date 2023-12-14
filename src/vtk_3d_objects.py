@@ -1,3 +1,6 @@
+"""Wrappers for 3D VTK objects
+
+"""
 import dataclasses
 
 import vtk
@@ -5,6 +8,17 @@ import vtk
 
 @dataclasses.dataclass
 class Vector3d:
+    """Dataclass representing a 3D floating point vector.
+
+    Implements the `add()` and `sub()` dunder methods.
+
+    Attributes:
+        x: The x component of the vector.
+        y: The y component of the vector.
+        z: The z component of the vector.
+
+    """
+
     x: float
     y: float
     z: float
@@ -17,6 +31,16 @@ class Vector3d:
 
 
 def new_cube(center: Vector3d, size: Vector3d, color: vtk.vtkColor3d) -> vtk.vtkActor:
+    """Creates a new vtk cube actor.
+
+    Args:
+        center: The Center point of the cube.
+        size: The dimensions of the cube.
+        color: The color of the cube.
+
+    Returns:
+        A vtk actor representing the created cube.
+    """
     cube = vtk.vtkCubeSource()
     cube.SetXLength(size.x)
     cube.SetYLength(size.y)
@@ -38,6 +62,16 @@ def new_cube(center: Vector3d, size: Vector3d, color: vtk.vtkColor3d) -> vtk.vtk
 
 
 def new_point(center: Vector3d, radius: float, color: vtk.vtkColor3d) -> vtk.vtkActor:
+    """Creates a new vtk point actor.
+
+    Args:
+        center: The Center point of the point.
+        radius: The radius of the point.
+        color: The color of the point.
+
+    Returns:
+        A vtk actor representing the created point.
+    """
     point = vtk.vtkSphereSource()
     point.SetRadius(radius)
     point.SetCenter(center.x, center.y, center.z)
@@ -56,8 +90,24 @@ def new_point(center: Vector3d, radius: float, color: vtk.vtkColor3d) -> vtk.vtk
 
 
 def new_cylinder(
-        center: Vector3d, radius: float, height: float, rotation: Vector3d, color: vtk.vtkColor3d
+    center: Vector3d,
+    radius: float,
+    height: float,
+    rotation: Vector3d,
+    color: vtk.vtkColor3d,
 ) -> vtk.vtkActor:
+    """Creates a new vtk cylinder actor.
+
+    Args:
+        center: The Center point of the cylinder.
+        radius: The radius of the cylinder.
+        height: The height of the cylinder.
+        rotation: The rotation of the cylinder relative to it's own axis.
+        color: The color of the point.
+
+    Returns:
+        A vtk actor representing the created cylinder.
+    """
     cylinder = vtk.vtkCylinderSource()
     cylinder.SetRadius(radius)
     cylinder.SetHeight(height)
@@ -82,6 +132,15 @@ def new_cylinder(
 
 
 def new_polyline(points: list[Vector3d], color: vtk.vtkColor3d) -> vtk.vtkActor:
+    """Creates a new vtk polyline actor.
+
+    Args:
+        points: A list containing the coordinates the polyline should connect.
+        color: The color of the polyline.
+
+    Returns:
+        A vtk actor representing the created polyline.
+    """
     # Create a vtkPoints object and store the points in it
     vtk_points = vtk.vtkPoints()
     for point in points:
@@ -115,11 +174,29 @@ def new_polyline(points: list[Vector3d], color: vtk.vtkColor3d) -> vtk.vtkActor:
     return polydata_actor
 
 
-def new_text(text: str, size: int, position: tuple[int, int],
-             frame: bool,
-             color: vtk.vtkColor3d,
-             bg_color: vtk.vtkColor3d,
-             f_color: vtk.vtkColor3d) -> vtk.vtkTextActor:
+def new_text(
+    text: str,
+    size: int,
+    position: tuple[int, int],
+    frame: bool,
+    color: vtk.vtkColor3d,
+    bg_color: vtk.vtkColor3d,
+    f_color: vtk.vtkColor3d,
+) -> vtk.vtkTextActor:
+    """Creates a new vtk text actor.
+
+    Args:
+        text: The text to display.
+        size: The size of the text.
+        position: The position to display the text in screen coordinates.
+        frame: Whether the text should have a frame.
+        color: The text color.
+        bg_color: The background text color.
+        f_color: The frame color.
+
+    Returns:
+        A vtk actor representing the created text.
+    """
     text_actor = vtk.vtkTextActor()
     text_actor.SetInput(text)
     text_property = text_actor.GetTextProperty()

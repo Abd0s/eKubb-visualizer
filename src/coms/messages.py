@@ -48,9 +48,8 @@ class BlockFall(coms_protocol.BaseMessage):
 
 
 class Reset(coms_protocol.BaseMessage):
-    """Indicates that the receiver resets
+    """Indicates that the receiver resets"""
 
-    """
     opcode = 6
 
 
@@ -64,6 +63,7 @@ messages: list[tuple[str, type[coms_protocol.BaseMessage]]] = inspect.getmembers
     sys.modules[__name__], pred
 )
 
+# Opcode message class mapping for this module namespace
 opcode_message_mapping: dict[int, type[coms_protocol.BaseMessage]] = {
     message[1].opcode: message[1] for message in messages
 }

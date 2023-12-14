@@ -1,3 +1,6 @@
+"""Worker thread that handles communication with data sources through the serial interface.
+
+"""
 import logging
 
 import serial
@@ -9,6 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class SerialWorker(QtCore.QObject):
+    """The Qt thread for communication over the serial interface
+
+    Attributes:
+        port: The serial port to connect to.
+    """
+
     block_fall = QtCore.pyqtSignal(int)
 
     def __init__(self, port: str) -> None:
@@ -17,6 +26,7 @@ class SerialWorker(QtCore.QObject):
         self.setObjectName("SerialWorker")
 
     def run(self) -> None:
+        """Ran when the thread is started"""
         # Open COM port
         try:
             self.serial_connection = serial.Serial(self.port)
@@ -51,12 +61,12 @@ class SerialWorker(QtCore.QObject):
         logger.info("Serial worker thread exiting")
 
     def handshake(self) -> None:
-        # Handshake protocol:
-        # Spin until Handshake message from microcontroller
-        # On handshake message recieved, send back HandshakeConfirm message
-        # If any other message received, discard.
-        # Tolerate 10 other messages before disconnecting, or 60 seconds.
+        """Performs the handshake transaction.
 
+        The following strategy is used:
+            1. Spin until Handshake message from microcontroller.
+            2. On handshake message recieved, send back HandshakeConfirm message.
+        """
         logger.info("Waiting for handshake message")
         # Spin until handshake message is recieved
         while not isinstance(self.read_message(acknowledge=False), messages.Handshake):
@@ -66,20 +76,32 @@ class SerialWorker(QtCore.QObject):
         self.serial_connection.write(messages.HandshakeConfirm.encode())
         logger.info("Handshake complete")
 
-    def read_message(self, acknowledge: bool = True) -> coms_protocol.BaseMessage | None:
-        # Message reading strategy:
-        # Read bytes until startbyte read, read 1 more byte (opcode) and map to message and get size, read size, read 1 more byte and check if endbyte
-        # If no end byte, discard message and log error
-        # If no opcode mapping discard, log error
-        # If valid read, send ACK message
+    def read_message(
+        self, acknowledge: bool = True
+    ) -> coms_protocol.BaseMessage | None:
+        """Tries to read and decode a message from the serial interface.
 
+        The following strategy is used:
+            1. Read bytes until startbyte read, read 1 more byte (opcode) and map to message and get size, read size,
+               read 1 more byte and check if endbyte.
+            2. If no end byte, discard message and log error.
+            3. If no opcode mapping discard, log error.
+
+        Args:
+            acknowledge: True if an acknowledge message should be sent back after a message has been received. Defaults to True.
+
+        Returns:
+            If succesfully received and decoden an message, an corresponding message instance. Else returns `None`.
+        """
         logger.debug("Reading message...")
 
         # Read and throw away bytes until start byte
         self.serial_connection.read_until(expected=coms_protocol.start_byte)
         logger.debug("Read start byte")
         # Read opcode
-        opcode = int.from_bytes(self.serial_connection.read(1), "little")  # sandiness doesn't matter
+        opcode = int.from_bytes(
+            self.serial_connection.read(1), "little"
+        )  # endinness doesn't matter
         # Map opcode to message
         try:
             message_type = messages.opcode_message_mapping[opcode]

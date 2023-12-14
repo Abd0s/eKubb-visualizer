@@ -1,3 +1,5 @@
+"""Qt widget to handle and display log records from the standard library logger in a thread safe manner.
+"""
 import logging
 import pathlib
 
@@ -7,6 +9,11 @@ import config
 
 
 class QTextEditLogger(logging.Handler, QtCore.QObject):
+    """Standard library log record handeler that displays the logs inside a `QPlainTextEdit` widget.
+
+    Thread safe due the implementation using Qt Signal and Slots to handle the logs.
+    """
+
     append_plain_text = QtCore.pyqtSignal(str)
 
     def __init__(self):
@@ -22,6 +29,14 @@ class QTextEditLogger(logging.Handler, QtCore.QObject):
 
 
 def configure_logging() -> QtWidgets.QPlainTextEdit:
+    """Configures the root logger to log to a file and the created Qt widget.
+
+    Logging level for the Qt widget is set by the `debug` config entry.
+    File logging is always at DEBUG level to the file "ekubb.logs.log".
+
+    Returns:
+        Qt widget displaying any logged logs.
+    """
     log_text_box = QTextEditLogger()
 
     # log to text box

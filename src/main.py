@@ -1,3 +1,7 @@
+"""Entry point for the simulation software.
+
+Entrypoint for the simulation software. Here the main Qt window is created and main event loop started.
+"""
 import sys
 import logging
 import pathlib
@@ -12,6 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 class MainWindow(QtWidgets.QMainWindow):
+    """Main window for Qt.
+
+    Instantiates the dockable `EkubbControls` widget and visualization widget.
+    """
+
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
 
