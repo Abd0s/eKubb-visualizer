@@ -184,7 +184,7 @@ class EkkubControlWidget(QtWidgets.QWidget):
             self.device_selector.addItem(i.device)
 
     def toggle_playing_team(self) -> None:
-        """Toggle the playing team"""
+        """Team toggle button slot, Toggle the playing team"""
         if self.toggle_playing_team_b_button.isEnabled():
             # Means team B button is pressed
             self.toggle_playing_team_b_button.setDisabled(True)
