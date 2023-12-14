@@ -185,12 +185,8 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.AddActor(origin)
 
     def update_function(self):
-<<<<<<< HEAD
         """Called when the demo button is pressed."""
-        self.indicate_illegal_throw()
-=======
         #self.indicate_illegal_throw()
->>>>>>> 8de70bb (fix incorrect side for block fall)
         self.reset_stick()
         self.fall_block(team_a, 0)
 

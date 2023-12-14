@@ -187,18 +187,13 @@ class EkkubControlWidget(QtWidgets.QWidget):
         self.tcp_thread.quit()
         logger.info("TCP receiver thread exit signalled")
 
-<<<<<<< HEAD
     def handle_block_fall(self, index: int) -> None:
         """Fall block slot, used from datasource worker threads.
 
         Args:
             index: The index of the block to fall over.
         """
-        self.game_visualizer_widget.fall_block(self.game_visualizer_widget.playing_team, index)
-=======
-    def handle_block_fall(self, index: int):
         self.game_visualizer_widget.fall_block(not self.game_visualizer_widget.playing_team, index)
->>>>>>> 8de70bb (fix incorrect side for block fall)
 
     def refresh_devices_list(self) -> None:
         """Refresh button slot, refreshes the COM devices list."""
