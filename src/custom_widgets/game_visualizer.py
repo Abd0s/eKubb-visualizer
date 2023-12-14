@@ -29,7 +29,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         ] = []
         self.stick: vtk.vtkActor | None = None
         self.stick_trail: list[vtk.vtkActor] = []
-        self.playing_team: bool = team_b
+        self.playing_team: bool = team_a
         # Playing-field
         self.plane = None
         # Initialize VTK renderer
@@ -180,7 +180,7 @@ class GameVisualizerWidget(QVTKRenderWindowInteractor.QVTKRenderWindowInteractor
         self.renderer.AddActor(origin)
 
     def update_function(self):
-        self.indicate_illegal_throw()
+        #self.indicate_illegal_throw()
         self.reset_stick()
         self.fall_block(team_a, 0)
 
