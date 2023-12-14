@@ -1,4 +1,5 @@
 """Qt widget to handle and display log records from the standard library logger in a thread safe manner.
+
 """
 import logging
 import pathlib

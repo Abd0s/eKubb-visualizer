@@ -104,16 +104,18 @@ class TCPReceiverWorker(QtCore.QObject):
         """Tries to read and decode a message from the TCP connection.
 
         The following strategy is used:
-            1. Read bytes until startbyte read, read 1 more byte (opcode) and map to message and get size, read size,
-               read 1 more byte and check if endbyte.
+            1. Read bytes until startbyte read, read 1 more byte (opcode) and map to message
+               and get size, read size, read 1 more byte and check if endbyte.
             2. If no end byte, discard message and log error.
             3. If no opcode mapping discard, log error.
 
         Args:
-            acknowledge: True if an acknowledge message should be sent back after a message has been received. Defaults to True.
+            acknowledge: True if an acknowledge message should be sent back after a message
+                         has been received. Defaults to True.
 
         Returns:
-            If succesfully received and decoden an message, an corresponding message instance. Else returns `None`.
+            If succesfully received and decoden an message, an corresponding message instance.
+            Else returns `None`.
         """
 
         logger.debug("Reading message...")
